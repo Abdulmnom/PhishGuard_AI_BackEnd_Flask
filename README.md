@@ -447,8 +447,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Abdulmnoum AL-brayky**
 
 - **GitHub**: [@Abdulmnom](https://github.com/Abdulmnom)
-- **Email**: abdulmnoum@example.com
-- **LinkedIn**: [Abdulmnoum AL-brayky](https://linkedin.com/in/abdulmnoum)
+- **LinkedIn**: [Abdulmnoum AL-brayky](https://www.linkedin.com/in/abdulmnoum-al-braky-136458278/)
 
 ---
 

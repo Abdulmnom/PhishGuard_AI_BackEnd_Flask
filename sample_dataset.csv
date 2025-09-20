@@ -1,0 +1,21 @@
+text,label
+"https://secure-paypal-verification.com/login",phishing
+"https://www.paypal.com/login",legitimate
+"Click here to claim your prize now!",phishing
+"Welcome to our newsletter subscription",legitimate
+"Your account has been suspended. Verify immediately.",phishing
+"Thank you for your recent purchase",legitimate
+"Free iPhone! Click to claim your prize",phishing
+"Amazon order confirmation #12345",legitimate
+"Urgent: Update your bank details now",phishing
+"Your monthly statement is ready",legitimate
+"Winner! You have won $1000. Click here",phishing
+"Password reset request confirmation",legitimate
+"Verify your identity to unlock account",phishing
+"New features available in your app",legitimate
+"Limited time offer - 50% off everything",phishing
+"Your subscription will renew automatically",legitimate
+"Security alert: Unusual login detected",phishing
+"Your order has been shipped",legitimate
+"Click here to avoid account closure",phishing
+"Welcome to our new service",legitimate

@@ -21,10 +21,25 @@ import json as jsonlib
 from email_validator import validate_email, EmailNotValidError
 from typing import Optional
 
+# --- New imports for ML functionality ---
+import pandas as pd
+import joblib
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import precision_score, recall_score, f1_score, classification_report
+import numpy as np
+from fastapi import File, UploadFile
+
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AI-based Phishing Detection System - API")
+
+# Create necessary directories for ML
+import os
+os.makedirs('data', exist_ok=True)
+os.makedirs('models', exist_ok=True)
 
 # --- one-time lightweight migration to drop users.full_name if exists ---
 with engine.connect() as conn:
@@ -407,4 +422,186 @@ def get_scan_logs(
             }
             for it in items
         ],
+    }
+
+
+# ==================== MACHINE LEARNING ENDPOINTS ====================
+
+@app.post("/upload-dataset")
+async def upload_dataset(file: UploadFile = File(...)):
+    """Upload a CSV dataset for training"""
+    try:
+        if not file.filename.endswith('.csv'):
+            raise HTTPException(status_code=400, detail="File must be a CSV")
+        
+        # Save uploaded file
+        file_path = f"data/{file.filename}"
+        with open(file_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+        
+        # Validate CSV format
+        try:
+            df = pd.read_csv(file_path)
+            if 'text' not in df.columns or 'label' not in df.columns:
+                os.remove(file_path)
+                raise HTTPException(
+                    status_code=400, 
+                    detail="CSV must contain 'text' and 'label' columns"
+                )
+            
+            # Check label values
+            unique_labels = df['label'].unique()
+            if not all(label in ['phishing', 'legitimate'] for label in unique_labels):
+                os.remove(file_path)
+                raise HTTPException(
+                    status_code=400,
+                    detail="Labels must be 'phishing' or 'legitimate'"
+                )
+            
+            return {
+                "message": "Dataset uploaded successfully",
+                "filename": file.filename,
+                "rows": len(df),
+                "columns": list(df.columns),
+                "labels": unique_labels.tolist()
+            }
+            
+        except Exception as e:
+            os.remove(file_path)
+            raise HTTPException(status_code=400, detail=f"Invalid CSV format: {str(e)}")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+
+@app.post("/train")
+async def train_model():
+    """Train the machine learning model"""
+    try:
+        # Find the most recent CSV file
+        csv_files = [f for f in os.listdir('data') if f.endswith('.csv')]
+        if not csv_files:
+            raise HTTPException(status_code=400, detail="No dataset found. Please upload a CSV file first.")
+        
+        # Use the most recent file
+        latest_file = max(csv_files, key=lambda x: os.path.getctime(os.path.join('data', x)))
+        file_path = f"data/{latest_file}"
+        
+        # Load and preprocess data
+        df = pd.read_csv(file_path)
+        
+        # Clean text data
+        df['text'] = df['text'].str.lower()
+        df['text'] = df['text'].str.replace(r'[^a-zA-Z\s]', '', regex=True)
+        
+        # Prepare features and labels
+        X = df['text']
+        y = df['label'].map({'phishing': 1, 'legitimate': 0})
+        
+        # Split data
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y
+        )
+        
+        # Vectorize text
+        vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
+        X_train_vec = vectorizer.fit_transform(X_train)
+        X_test_vec = vectorizer.transform(X_test)
+        
+        # Train model
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
+        model.fit(X_train_vec, y_train)
+        
+        # Evaluate model
+        y_pred = model.predict(X_test_vec)
+        precision = precision_score(y_test, y_pred)
+        recall = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred)
+        
+        # Save model and vectorizer
+        joblib.dump(model, 'models/random_forest_model.pkl')
+        joblib.dump(vectorizer, 'models/tfidf_vectorizer.pkl')
+        
+        return {
+            "message": "Model trained successfully",
+            "dataset": latest_file,
+            "training_samples": len(X_train),
+            "test_samples": len(X_test),
+            "metrics": {
+                "precision": round(precision, 3),
+                "recall": round(recall, 3),
+                "f1_score": round(f1, 3)
+            }
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Training failed: {str(e)}")
+
+
+@app.post("/predict")
+async def predict(payload: dict):
+    """Make a prediction using the trained model"""
+    try:
+        text = payload.get('text', '').strip()
+        if not text:
+            raise HTTPException(status_code=400, detail="Text is required")
+        
+        # Check if model exists
+        if not os.path.exists('models/random_forest_model.pkl') or not os.path.exists('models/tfidf_vectorizer.pkl'):
+            raise HTTPException(status_code=400, detail="Model not trained. Please train the model first.")
+        
+        # Load model and vectorizer
+        model = joblib.load('models/random_forest_model.pkl')
+        vectorizer = joblib.load('models/tfidf_vectorizer.pkl')
+        
+        # Preprocess text
+        text_clean = text.lower()
+        text_clean = re.sub(r'[^a-zA-Z\s]', '', text_clean)
+        
+        # Vectorize
+        text_vec = vectorizer.transform([text_clean])
+        
+        # Predict
+        prediction = model.predict(text_vec)[0]
+        probability = model.predict_proba(text_vec)[0]
+        
+        result = "phishing" if prediction == 1 else "legitimate"
+        confidence = max(probability)
+        
+        return {
+            "text": text,
+            "prediction": result,
+            "confidence": round(confidence, 3),
+            "probabilities": {
+                "legitimate": round(probability[0], 3),
+                "phishing": round(probability[1], 3)
+            }
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+
+@app.get("/model-status")
+async def model_status():
+    """Check the status of the trained model"""
+    model_exists = os.path.exists('models/random_forest_model.pkl')
+    vectorizer_exists = os.path.exists('models/tfidf_vectorizer.pkl')
+    
+    status = "trained" if (model_exists and vectorizer_exists) else "not_trained"
+    
+    # Get dataset info if available
+    csv_files = [f for f in os.listdir('data') if f.endswith('.csv')]
+    latest_dataset = None
+    if csv_files:
+        latest_file = max(csv_files, key=lambda x: os.path.getctime(os.path.join('data', x)))
+        latest_dataset = latest_file
+    
+    return {
+        "status": status,
+        "model_exists": model_exists,
+        "vectorizer_exists": vectorizer_exists,
+        "latest_dataset": latest_dataset,
+        "available_datasets": csv_files
     }

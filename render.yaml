@@ -2,5 +2,8 @@ services:
   - type: web
     name: phishing-detection-api
     runtime: python
-    buildCommand: "./build.sh"
+    buildCommand: "pip install -r requirements.txt"
     startCommand: "python app/main.py"
+    envVars:
+      - key: POETRY_VERSION
+        value: "0"

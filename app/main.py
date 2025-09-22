@@ -588,16 +588,16 @@ async def model_status():
     """Check the status of the trained model"""
     model_exists = os.path.exists('models/random_forest_model.pkl')
     vectorizer_exists = os.path.exists('models/tfidf_vectorizer.pkl')
-    
+
     status = "trained" if (model_exists and vectorizer_exists) else "not_trained"
-    
+
     # Get dataset info if available
     csv_files = [f for f in os.listdir('data') if f.endswith('.csv')]
     latest_dataset = None
     if csv_files:
         latest_file = max(csv_files, key=lambda x: os.path.getctime(os.path.join('data', x)))
         latest_dataset = latest_file
-    
+
     return {
         "status": status,
         "model_exists": model_exists,
@@ -605,3 +605,9 @@ async def model_status():
         "latest_dataset": latest_dataset,
         "available_datasets": csv_files
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

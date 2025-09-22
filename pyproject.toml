@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "phishguard-ai-backend"
+version = "0.1.0"
+description = "AI-based Phishing Detection System API"
+authors = ["Abdulmnom <bdalhyalbryky@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "0.115.2"
+uvicorn = {extras = ["standard"], version = "0.30.6"}
+SQLAlchemy = "2.0.35"
+pydantic = "2.9.2"
+passlib = {extras = ["bcrypt"], version = "1.7.4"}
+python-jose = {extras = ["cryptography"], version = "3.3.0"}
+email-validator = "2.2.0"
+requests = "2.32.3"
+dnspython = "2.8.0"
+pandas = "2.1.4"
+scikit-learn = "1.3.2"
+joblib = "1.3.2"
+numpy = "1.24.3"
+python-multipart = ">=0.0.12"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

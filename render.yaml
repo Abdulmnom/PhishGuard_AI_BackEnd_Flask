@@ -1,9 +1,6 @@
 services:
   - type: web
     name: phishing-detection-api
-    runtime: python3
-    buildCommand: pip install -r requirements.txt
-    startCommand: python app/main.py
-    envVars:
-      - key: PORT
-        value: 10000
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "python app/main.py"

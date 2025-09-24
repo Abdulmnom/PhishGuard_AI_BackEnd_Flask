@@ -28,8 +28,6 @@
 - [Database Schema](#database-schema)
 - [Security Features](#security-features)
 - [Contributing](#contributing)
-- [License](#license)
-- [Author](#author)
 
 ---
 
@@ -434,40 +432,6 @@ We welcome contributions! Please follow these steps:
 - Update documentation
 - Ensure all tests pass
 
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
-
-**Abdulmnoum AL-brayky**
-
-- **GitHub**: [@Abdulmnom](https://github.com/Abdulmnom)
-- **LinkedIn**: [Abdulmnoum AL-brayky](https://www.linkedin.com/in/abdulmnoum-al-braky-136458278/)
-
----
-
-## 🙏 Acknowledgments
-
-- **FastAPI** team for the excellent web framework
-- **Scikit-learn** community for machine learning tools
-- **SQLAlchemy** for database ORM capabilities
-- **Open source community** for inspiration and support
-
----
-
-## 📊 Project Stats
-
-![GitHub stars](https://img.shields.io/github/stars/Abdulmnom/PhishGuard_AI_BackEnd_Flask?style=social)
-![GitHub forks](https://img.shields.io/github/forks/Abdulmnom/PhishGuard_AI_BackEnd_Flask?style=social)
-![GitHub issues](https://img.shields.io/github/issues/Abdulmnom/PhishGuard_AI_BackEnd_Flask)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/Abdulmnom/PhishGuard_AI_BackEnd_Flask)
-
----
 
 <div align="center">
 

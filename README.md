@@ -28,8 +28,7 @@
 - [Database Schema](#database-schema)
 - [Security Features](#security-features)
 - [Contributing](#contributing)
-- [License](#license)
-- [Author](#author)
+
 
 ---
 
@@ -441,13 +440,6 @@ We welcome contributions! Please follow these steps:
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-
-## 👨‍💻 Author
-
-**Abdulmnoum AL-brayky**
-
-- **GitHub**: [@Abdulmnom](https://github.com/Abdulmnom)
-- **LinkedIn**: [Abdulmnoum AL-brayky](https://www.linkedin.com/in/abdulmnoum-al-braky-136458278/)
 
 ---
 

@@ -126,7 +126,7 @@ def get_optional_user_id(request: Request, db: Session) -> int | None:
     return user.id if user else None
 
 
-@app.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+@app.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     existing_email = db.query(User).filter(User.email == payload.email).first()
     if existing_email is not None:
@@ -144,7 +144,8 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
-    return user
+    token = create_access_token(subject=str(user.id))
+    return TokenResponse(access_token=token)
 
 
 @app.post("/login", response_model=TokenResponse)

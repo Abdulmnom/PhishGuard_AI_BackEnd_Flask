@@ -28,7 +28,10 @@
 - [Database Schema](#database-schema)
 - [Security Features](#security-features)
 - [Contributing](#contributing)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7173446ae2ceb35f79536a1fecb5e0d1bcb8bb4f
 
 ---
 
@@ -140,7 +143,6 @@ python -m uvicorn app.main:app --reload
 ```
 
 ---
-
 ## 💻 Usage
 
 ### Start the Application
@@ -433,6 +435,7 @@ We welcome contributions! Please follow these steps:
 - Update documentation
 - Ensure all tests pass
 
+<<<<<<< HEAD
 ---
 
 ## 📄 License
@@ -460,6 +463,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/Abdulmnom/PhishGuard_AI_BackEnd_Flask)
 
 ---
+=======
+>>>>>>> 7173446ae2ceb35f79536a1fecb5e0d1bcb8bb4f
 
 <div align="center">
 
